@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strings</title>
+    <style>
+        textarea {
+            width: 100%;
+            font-size: 1.15em;
+            display: block;
+            height: 100px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <p>Enter your string</p>
+    <textarea id="userString"></textarea>
+    <button id="btnString">Process String</button>
+    <div id="output"></div>
+    <script>
+        const btnString = document.getElementById('btnString');
+
+        btnString.onclick = (e) => {
+            let out = "";
+            let userString = document.getElementById('userString').value;
+            
+            let stringCount = userString.length;
+            out += "<h2>String Information</h2>";
+            out += "Characters: " + stringCount + "<br/>";
+
+            //Position and Unicode
+            out += "<h3>Character Position</h3>";
+            let x = 0;
+            while(x < stringCount){
+                out += x + ": " + userString.charAt(x) +
+                " Unicode: " + userString.charCodeAt(x) + "<br/>";
+                x++;
+            }
+            document.getElementById('output').innerHTML = out;
+
+            //Ends With
+            if(userString.endsWith(".")){
+                out += "<p>It does end with .</p>";
+            } else {
+                out += "<p>It does NOT end with .</p>";
+            }
+
+            //Character Position
+            out += "<p>The first 'e' is at position " + userString.indexOf('e') + ".";
+            out += "<br/>The last 'e' is at position " + userString.lastIndexOf('e') + ".</p>";
+
+            //Character Replacement
+            out += "<p>Replacements Made: <br/>" + userString.Replace(/[A-Z]/g, "X");
+            out += "</p>";
+
+            //Split in to an array
+            let family = "Mark Brett Joan Rick Kerry";
+            let familyArray = family.split(' ');
+            for(let x = 0; x < familyArray.length; x++){
+                out += familyArray[x] + "<br/>";
+                out += " ";
+            }
+        }
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="weather.css" rel="stylesheet" type="text/css">
+    <title>Current Conditions</title>
+</head>
+<body>
+    <div id="weather"></div>
+   
+    <script>
+        let key = "f449f7a5e7bc2783ff5d0e9346f6629f";
+        let url = "https://api.openweathermap.org/data/3.0/onecall";
+    
+        //Convert Epoch Time to Human Time
+        let convertTime = function(eTime){
+            let date = new Date(eTime * 1000);
+            let hours = date.getHours() > 12 ? date.getHours() - 12 : date.getHours();
+            let am_pm = date.getHours() >= 12 ? "PM" : "AM";
+            let minutes = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+            let time = hours + ":" + minutes + " " + am_pm;
+            return time;
+        }
+
+        //Convert Kelvin to Celsius
+        let KToC = function(kTemp){
+            //Converting from Kelvin to Celsius
+            return(Math.round(kTemp - 273.15));
+        }
+
+        //Determine Wind Direction
+        let windDirection = function(d) {
+            if (11.25 <= d && d < 33.75){
+                return "NNE";
+            } else if (33.27 <= d && d < 56.25){
+                return "NE";
+            } else if (56.25 <= d && d < 78.75){
+                return "ENE";
+            } else if (78.75 <= d && d < 101.25){
+                return "E";
+            } else if (101.25 <= d && d < 123.75){
+                return "ESE";
+            } else if (123.75 <= d && d < 146.25){
+                return "SE";
+            } else if (146.25 <= d && d < 168.75) {
+                return "SSE";
+            } else if (168.75 <= d && d < 191.25) {
+                return "S";
+            } else if (191.25 <= d && d < 213.75) {
+                return "SSW";
+            } else if (213.75 <= d && d < 236.25) {
+                return "SW";
+            } else if (236.25 <= d && d < 258.75) {
+                return "WSW";
+            } else if (258.75 <= d && d < 281.25) {
+                return "W";
+            } else if (281.25 <= d && d < 303.75) {
+                return "WNW";
+            } else if (303.75 <= d && d < 326.25) {
+                return "NW";
+            } else if (326.25 <= d && d < 348.75) {
+                return "NNW";
+            } else {
+                return "N";
+            }
+        }
+
+        // https://api.openweathermap.org/data/3.0/onecall?lat=33.44&lon=-94.04&appid={API key}
+        // https://api.openweathermap.org/data/3.0/onecall?lat=-27.473624&lon=153.004194&appid=f449f7a5e7bc2783ff5d0e9346f6629f
+        // Get Lat and Long
+        navigator.geolocation.getCurrentPosition(function(position) {
+            console.log(position);
+            let lat = position.coords.latitude;
+            let long = position.coords.longitude;
+            url += "?lat=" + lat + "&lon=" + long + "&appid=" + key;
+            console.log(url);
+
+            // fetch data
+            fetch(url).then(function(response) {
+                console.log("Response: " + response);
+                return response.json();
+            }).then(function(weather) {
+                displayWeather(weather);
+            })
+        });
+
+        let displayWeather = function(weather){
+            console.log(weather);
+            let city = weather.timezone;
+            let sunrise = weather.current.sunrise;
+            let sunset = weather.current.sunset;
+            let currentTemp = weather.current.temp;
+            let feelsLike = weather.current.feels_like;
+            let humidity = weather.current.humidity;
+            let description = weather.current.weather[0].description;
+            let windDir = weather.current.wind_deg;
+            let windSpeed = weather.current.wind_speed;
+
+            output = "<h1>" + city + "Current Conditions</h1>";
+            output += "<div id='conditions'><h2>" + KToC(currentTemp) + "&#8451;</h2>";
+            output += "<div id='detail'><div id='temp'><h3>Feels Like: " + KToC(feelsLike) + "&#8451;</h3>";
+            output += "<h3>Humidity: " + humidity + "%</h3>";
+            output += "<div id='wind'><h3>Wind: " + windDirection(windDir) + " at " + Math.round(windSpeed * 1.6) + " km/h</h3>";
+            output += "<h3>Sunrise: " + convertTime(sunrise) + "</h3>";
+            output += "<h3>Sunset: " + convertTime(sunset) + "</h3></div>";
+            output += "</div></div>";
+            document.getElementById("weather").innerHTML = output;
+
+        }
+    </script>
+</body>
+
+</html>
